@@ -1,0 +1,12 @@
+﻿bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.db
+appsettings.*.json
+SecretManager/
+*.pdb
