@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.DTOs;
+using TodoList.Api.Features.Tasks.Commands;
 using TodoList.Api.Features.Tasks.Queries;
 
 namespace TodoList.Api.Controllers;
@@ -35,5 +36,26 @@ public class TasksController : ControllerBase
         var tasks = await _mediator.Send(query);
 
         return Ok(tasks);
+    }
+
+    /// <summary>
+    /// RAdiciona tarefa a lista de afazeres
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<TaskDTO>> CreateTask([FromBody] CreateTaskDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var command = new CreateTaskCommand
+        {
+            Titulo = dto.Titulo,
+            Descricao = dto.Descricao
+        };
+
+        var task = await _mediator.Send(command);
+
+        // Retornar 201 Created com Location header
+        return Ok();
     }
 }
