@@ -97,4 +97,19 @@ public class TasksController : ControllerBase
 
         return Ok(updatedTask);
     }
+
+    /// <summary>
+    /// Deleta Tarefa pelo ID
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTask(int id)
+    {
+        var command = new DeleteTaskCommand(id);
+        var deleted = await _mediator.Send(command);
+
+        if (!deleted)
+            return NotFound();
+
+        return NoContent();
+    }
 }
