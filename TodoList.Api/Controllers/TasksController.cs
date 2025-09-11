@@ -39,7 +39,22 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// RAdiciona tarefa a lista de afazeres
+    /// Retorna a lista de tarefas por Id
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<TaskDTO>> GetTaskById(int id)
+    {
+        var query = new GetTaskByIdQuery(id);
+        var task = await _mediator.Send(query);
+
+        if (task == null)
+            return NotFound();
+
+        return Ok(task);
+    }
+
+    /// <summary>
+    /// Adiciona tarefa a lista de afazeres
     /// </summary>
     [HttpPost]
     public async Task<ActionResult<TaskDTO>> CreateTask([FromBody] CreateTaskDto dto)
@@ -55,7 +70,6 @@ public class TasksController : ControllerBase
 
         var task = await _mediator.Send(command);
 
-        // Retornar 201 Created com Location header
-        return Ok();
+        return CreatedAtAction(nameof(GetTaskById), new { id = task.Id }, task);
     }
 }

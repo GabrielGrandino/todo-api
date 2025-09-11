@@ -10,3 +10,13 @@ public class GetTasksQuery : IRequest<List<TaskDTO>>
     public int PageSize { get; set; } = 10;
     public bool? Concluida { get; set; }
 }
+
+public class GetTaskByIdQuery : IRequest<TaskDTO?>
+{
+    public int Id { get; set; }
+
+    public GetTaskByIdQuery(int id)
+    {
+        Id = id;
+    }
+}
