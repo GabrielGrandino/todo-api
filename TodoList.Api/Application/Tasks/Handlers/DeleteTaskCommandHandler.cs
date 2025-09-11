@@ -7,22 +7,36 @@ namespace TodoList.Api.Features.Tasks.Commands;
 public class DeleteTaskCommandHandler : IRequestHandler<DeleteTaskCommand, bool>
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<DeleteTaskCommandHandler> _logger;
 
-    public DeleteTaskCommandHandler(AppDbContext context)
+    public DeleteTaskCommandHandler(AppDbContext context, ILogger<DeleteTaskCommandHandler> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<bool> Handle(DeleteTaskCommand request, CancellationToken cancellationToken)
     {
-        var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
+        _logger.LogInformation("Iniciando remoção da tarefa: {Id}", request.Id);
+        try
+        {
+            var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
 
-        if (task == null)
-            return false;
+            if (task == null)
+                return false;
 
-        _context.Tasks.Remove(task);
-        await _context.SaveChangesAsync(cancellationToken);
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync(cancellationToken);
 
-        return true;
+            _logger.LogInformation("Tarefa excluída com sucesso. Id: {Id}", task.Id);
+
+            return true;
+        }
+        catch (Exception ex) 
+        {
+            _logger.LogError(ex, "Erro ao excluir tarefa: {Id}", request.Id);
+            throw;
+        }
+        
     }
 }

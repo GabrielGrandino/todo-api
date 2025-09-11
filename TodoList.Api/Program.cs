@@ -26,6 +26,16 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+//Logger
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = false;
+    options.SingleLine = true;
+    options.TimestampFormat = "[HH:mm:ss]";
+});
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
