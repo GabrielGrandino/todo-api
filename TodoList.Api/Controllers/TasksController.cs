@@ -72,4 +72,29 @@ public class TasksController : ControllerBase
 
         return CreatedAtAction(nameof(GetTaskById), new { id = task.Id }, task);
     }
+
+    /// <summary>
+    /// Atualiza informações das tarefas
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<ActionResult<TaskDTO>> UpdateTask(int id, [FromBody] UpdateTaskDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var command = new UpdateTaskCommand
+        {
+            Id = id,
+            Titulo = dto.Titulo,
+            Descricao = dto.Descricao,
+            Concluida = dto.Concluida
+        };
+
+        var updatedTask = await _mediator.Send(command);
+
+        if (updatedTask == null)
+            return NotFound();
+
+        return Ok(updatedTask);
+    }
 }
