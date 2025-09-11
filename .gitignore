@@ -10,3 +10,4 @@ obj/
 appsettings.*.json
 SecretManager/
 *.pdb
+logs/

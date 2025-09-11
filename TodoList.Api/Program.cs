@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using TodoList.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,14 +28,19 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //Logger
-builder.Logging.ClearProviders();
-builder.Logging.AddSimpleConsole(options =>
-{
-    options.IncludeScopes = false;
-    options.SingleLine = true;
-    options.TimestampFormat = "[HH:mm:ss]";
-});
-builder.Logging.SetMinimumLevel(LogLevel.Information);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()           // nível mínimo
+    .Enrich.FromLogContext()
+    .WriteTo.Console(                      // logs no console
+        outputTemplate: "[{Timestamp:HH:mm:ss}][{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File(                         // logs em arquivo
+        path: "logs/log-.txt",             // o "-" indica rotação diária
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "[{Timestamp:HH:mm:ss}][{Level:u3}] {Message:lj}{NewLine}{Exception}",
+        retainedFileCountLimit: 30)        // mantém 30 dias
+    .CreateLogger();
+
+builder.Host.UseSerilog(); 
 
 var app = builder.Build();
 
