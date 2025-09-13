@@ -6,6 +6,15 @@ using TodoList.Api.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//CORS
+builder.Service.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddControllers();
 
@@ -29,15 +38,15 @@ builder.Services.AddSwaggerGen(options =>
 
 //Logger
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()           // nÌvel mÌnimo
+    .MinimumLevel.Information()           // n√≠vel m√≠nimo
     .Enrich.FromLogContext()
     .WriteTo.Console(                      // logs no console
         outputTemplate: "[{Timestamp:HH:mm:ss}][{Level:u3}] {Message:lj}{NewLine}{Exception}")
     .WriteTo.File(                         // logs em arquivo
-        path: "logs/log-.txt",             // o "-" indica rotaÁ„o di·ria
+        path: "logs/log-.txt",             // o "-" indica rota√ß√£o di√°ria
         rollingInterval: RollingInterval.Day,
         outputTemplate: "[{Timestamp:HH:mm:ss}][{Level:u3}] {Message:lj}{NewLine}{Exception}",
-        retainedFileCountLimit: 30)        // mantÈm 30 dias
+        retainedFileCountLimit: 30)        // mant√©m 30 dias
     .CreateLogger();
 
 builder.Host.UseSerilog(); 
@@ -58,6 +67,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 //app.UseAuthorization();
+
+app.UseCors("AllowAll");
 
 app.MapControllers();
 
